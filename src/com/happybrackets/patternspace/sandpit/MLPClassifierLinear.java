@@ -36,7 +36,6 @@ package com.happybrackets.patternspace.sandpit;
  */
 public class MLPClassifierLinear {
 
-
     public static void main(String[] args) throws Exception {
         int seed = 123;
         double learningRate = 0.01;
@@ -81,11 +80,9 @@ public class MLPClassifierLinear {
                         .nIn(numHiddenNodes).nOut(numOutputs).build())
                 .pretrain(false).backprop(true).build();
 
-
         MultiLayerNetwork model = new MultiLayerNetwork(conf);
         model.init();
         model.setListeners(new ScoreIterationListener(10));  //Print score every 10 parameter updates
-
 
         for ( int n = 0; n < nEpochs; n++) {
             model.fit( trainIter );
@@ -142,7 +139,6 @@ public class MLPClassifierLinear {
         trainIter = new RecordReaderDataSetIterator(rr,nTrainPoints,0,2);
         DataSet ds = trainIter.next();
 //        PlotUtil.plotTrainingData(ds.getFeatures(), ds.getLabels(), allXYPoints, predictionsAtXYPoints, nPointsPerAxis);
-
 
         //Get test data, run the test data through the network to generate predictions, and plot those predictions:
         rrTest.initialize(new FileSplit(new ClassPathResource("/classification/linear_data_eval.csv").getFile()));
