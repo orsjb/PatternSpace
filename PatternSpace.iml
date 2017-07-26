@@ -8,10 +8,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="org.deeplearning4j:deeplearning4j-core:0.8.0" level="project" />
-    <orderEntry type="library" name="org.nd4j:nd4j-native-platform:0.8.0" level="project" />
-    <orderEntry type="library" name="org.datavec:datavec-api:0.8.0" level="project" />
-    <orderEntry type="library" name="com.spotify:scio-tensorflow_2.11:0.4.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="cn.apiclub.third:jgap:3.6.2" level="project" />
   </component>
 </module>
