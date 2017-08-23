@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: net.sf.jgap:jgap:3.4.4">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.jgap/jgap/3.4.4/1310e1bff698da76e6b415f02d4e7aefcb7378ce/jgap-3.4.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/net.sf.jgap/jgap/3.4.4/8cf876e54e83ef2ba517d43ee944a35dcc8ff26/jgap-3.4.4-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
