@@ -1,4 +1,6 @@
-package net.happybrackets.patternspace.decider.core;
+package net.happybrackets.patternspace.decider;
+import net.happybrackets.patternspace.core.ProcessingUnit;
+
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
@@ -6,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class Decider implements Serializable {
+public class Decider implements Serializable, ProcessingUnit {
 
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_NUM_ELEMENTS = 20;
@@ -21,10 +23,10 @@ public class Decider implements Serializable {
 	
 	boolean doConsolidate;
 	boolean verbose;
-	boolean doAnalysis;
 	int usageCount;
 	int lastConsolidateTime;
 	int[] state;
+	double[] output;
 	int[] stateChangeCount;
 	int[] stateInfluenceCount;
 	int numInputs;
@@ -50,8 +52,8 @@ public class Decider implements Serializable {
 		nextLeafIndex = 0;
 		verbose = false;
 		doConsolidate = true;
-		doAnalysis = true;
 		state = new int[numElements];
+		output = new double[numElements - numInputs];
 		stateChangeCount = new int[numElements];
 		stateInfluenceCount = new int[numElements];
 		usageCount = 0;
@@ -124,39 +126,17 @@ public class Decider implements Serializable {
 		usageCount++;
 		if(usageCount % consolidateInterval == 0) {
 			if(doConsolidate) adapt();
-
 			resetCounts();
 			lastConsolidateTime = usageCount;
-			
 		}
-		
-		//any analysis?
-		if(doAnalysis) analysis();
 	}
-	
-	private void analysis() {
 
-		//look at long term entropy and transfer entropy.
-		
-		int[] inputs = new int[numInputs];
-		for(int i = 0; i < numInputs; i++) {
-			inputs[i] = getInputInt(i);
+	@Override
+	public void update(double[] inputs) {
+		for(int i = 0; i < inputs.length; i++) {
+			setInputFract(i, inputs[i]);
 		}
-		int result = getCurrentLeaf();
-		
-		//divide result into 10x10 states (note this should reflect the output to audio)
-		int r1 = result % 10;
-		int r2 = (result / 10) % 10;
-		
-		//analyse entropy history - store numbers in buffer
-		//given last N elements, make prediction 
-		
-		
-		//also look at transfer entropy - causality
-		
-		
-		
-		
+		process();
 	}
 	
 	private void adapt() {
@@ -194,17 +174,25 @@ public class Decider implements Serializable {
 		return result;
 	}
 
-	public float getStateFract(int i) {
+	public double getStateFract(int i) {
 		if(i + numInputs < numElements) {
-			return (float)state[i + numInputs] / numStates;
+			return (double)state[i + numInputs] / numStates;
 		} else {
 			throw new ArrayIndexOutOfBoundsException(i);
 		}
 	}
+
+	@Override
+	public double[] getOutputs() {
+		for(int i = 0; i < output.length; i++) {
+			output[i] = state[i + numInputs];
+		}
+		return  output;
+	}
 	
-	public float getInputFract(int i) {
+	public double getInputFract(int i) {
 		if(i < numInputs) {
-			return (float)state[i] / numStates;
+			return (double)state[i] / numStates;
 		} else {
 			throw new ArrayIndexOutOfBoundsException(i);
 		}
@@ -218,7 +206,7 @@ public class Decider implements Serializable {
 		}
 	}
 	
-	public void setInputFract(int i, float val) {
+	public void setInputFract(int i, double val) {
 		if(i < numInputs) {
 			val = Math.min(Math.max(val, 0), 1);
 			state[i] = (int)(val * numStates);
@@ -265,10 +253,6 @@ public class Decider implements Serializable {
 		return rng.nextInt(numElements);
 	}
 
-	public int getCurrentLeaf() {
-		return lastLeaf;
-	}
-
 	public Decider copyMutate() {
 		Decider newD = new Decider(rng, numElements, numStates, consolidateInterval, numInputs);
 		newD.root = root.copyMutate(newD);
@@ -293,14 +277,10 @@ public class Decider implements Serializable {
 		}
 		return d;
 	}
-	
-	
-	
-	
+
+	@Override
+	public int getDiscreteState() {
+		return lastLeaf;
+	}
 }
-
-
-
-
-
 

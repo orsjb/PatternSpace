@@ -1,4 +1,4 @@
-package net.happybrackets.patternspace.decider.core;
+package net.happybrackets.patternspace.decider;
 
 public abstract class Leaf extends Operation {
 

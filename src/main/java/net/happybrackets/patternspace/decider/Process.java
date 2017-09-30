@@ -1,4 +1,4 @@
-package net.happybrackets.patternspace.decider.core;
+package net.happybrackets.patternspace.decider;
 
 import java.io.Serializable;
 
@@ -8,14 +8,6 @@ public class Process extends Operation {
 	private static final long serialVersionUID = 1L;
 
 	static float scale = 0.01f;
-//	static float[] sine;
-//	
-//	static {
-//		sine = new float[1000000];
-//		for(int i = 0; i < sine.length; i++) {
-//			sine[i] = ((float)Math.sin((float)i / sine.length * 2f * Math.PI) + 1f) * 0.5f * scale;
-//		}
-//	}
 
 	static enum BinaryOp implements Serializable {
 		ADD, SUBTRACT, MULTIPLY
@@ -29,7 +21,6 @@ public class Process extends Operation {
 	}
 	
 	private float op(int deciderState) {
-//		return decider.numStates * sine[(int)(deciderState / (float)decider.numStates * (sine.length - 1))];
 		return scale * deciderState;
 	}
 	
@@ -44,7 +35,6 @@ public class Process extends Operation {
 			decider.state[targetIndex] -= op(decider.state[sourceIndex]);
 			break;
 		case MULTIPLY:
-//			decider.state[targetIndex] *= 2f * (float)decider.state[sourceIndex] / (decider.numStates);
 			decider.state[targetIndex] *= 0.5f + (float)decider.state[sourceIndex] / (decider.numStates);
 			break;
 		default:
@@ -66,10 +56,6 @@ public class Process extends Operation {
 		p.targetIndex  = d.nextRandomTargetIndex();
 		return p;
 	}
-	
-	protected void resetCounts() {
-		super.resetCounts();
-	}
 
 	@Override
 	protected Operation copyMutate(Decider newDecider) {
@@ -77,7 +63,7 @@ public class Process extends Operation {
 		copy.op = op;
 		copy.sourceIndex = sourceIndex;
 		copy.targetIndex = targetIndex;
-		if(decider.prob(0.05f)) copy.op = BinaryOp.values()[decider.rng.nextInt(3)];
+		if(decider.prob(0.05f)) copy.op = BinaryOp.values()[decider.rng.nextInt(BinaryOp.values().length)];
 		if(decider.prob(0.05f)) copy.sourceIndex = decider.nextRandomSourceIndex();
 		if(decider.prob(0.05f)) copy.targetIndex = decider.nextRandomTargetIndex();
 		return copy;

@@ -1,4 +1,4 @@
-package net.happybrackets.patternspace.decider.core;
+package net.happybrackets.patternspace.decider;
 
 import java.util.ArrayList;
 
@@ -26,7 +26,7 @@ public class ProcessArray extends Leaf {
 		ProcessArray pa = new ProcessArray(d);
 		int numProcesses = d.rng.nextInt(50);
 		for(int i = 0; i < numProcesses; i++) {
-			pa.operations.add(Process.newRandom(d));
+			pa.operations.add(net.happybrackets.patternspace.decider.Process.newRandom(d));
 		}
 		return pa;
 	}

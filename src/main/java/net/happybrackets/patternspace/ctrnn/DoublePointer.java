@@ -14,20 +14,20 @@ import java.io.Serializable;
 
 public class DoublePointer implements Serializable {
 	
-	protected float value;
+	protected double value;
 	
 	public DoublePointer() {
 	}
 	
-	public DoublePointer(float value) {
+	public DoublePointer(double value) {
 		this.value = value;
 	}
 
-	public float getValue() {
+	public double getValue() {
 		return value;
 	}
 
-	public void setValue(float value) {
+	public void setValue(double value) {
 		this.value = value;
 	}
 	

@@ -1,4 +1,4 @@
-package net.happybrackets.patternspace.decider.core;
+package net.happybrackets.patternspace.decider;
 
 import java.io.Serializable;
 
@@ -25,7 +25,7 @@ public abstract class Operation implements Serializable {
 	protected void resetCounts() {
 		usageCount = 0;
 	}
-	
+
 	protected void adapt() {}
 	
 	protected abstract Operation copyMutate(Decider newDecider);

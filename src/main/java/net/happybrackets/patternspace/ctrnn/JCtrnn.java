@@ -8,6 +8,8 @@
 
 package net.happybrackets.patternspace.ctrnn;
 
+import net.happybrackets.patternspace.core.ProcessingUnit;
+
 import java.beans.XMLEncoder;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -16,7 +18,7 @@ import java.io.Serializable;
 import java.util.Random;
 
 
-public class JCtrnn implements Serializable {
+public class JCtrnn implements Serializable, ProcessingUnit {
 	
 	public static final long serialVersionUID = 1;
 	
@@ -26,7 +28,7 @@ public class JCtrnn implements Serializable {
 	private DoublePointer[] output;	//array of pointers to outputs
 	private JLi[] hiddenNode;		//pointer to array of hidden nodes
 	private JLi[] inNode;			//pointer to array of input nodes
-	private float[] startState;		//start state which can be recalled
+	private double[] startState;		//start state which can be recalled
 
 	//new fully-connected JCtrnn with no external inputs, output trace is connected to first input
 	//required genotype size is (I*4 + N^2 + N*3) where I = number of input nodes and N = number of hidden nodes
@@ -39,7 +41,7 @@ public class JCtrnn implements Serializable {
 		hiddenNode = new JLi[params.numHiddenNodes];
 		inNode = new JLi[params.numInputNodes];
 		output = new DoublePointer[params.numOutputNodes];
-		startState = new float[numNodes * 2];
+		startState = new double[numNodes * 2];
 		for(i = 0; i < params.numInputNodes; i++) {
 			input[i] = new DoublePointer();
 		}
@@ -53,14 +55,14 @@ public class JCtrnn implements Serializable {
 			inNode[i].transferFunction = params.inTransferFunc;
 			inNode[i].timeStep = params.timeStep;
 			inNode[i].input[0] = input[i];
-			inNode[i].weight = new float[inNode[i].numInputs];
+			inNode[i].weight = new double[inNode[i].numInputs];
 			inNode[i].weight[0] = linMap(genotype.getNextGene(), params.inWeightMin, params.inWeightMax); 
 			
 			inNode[i].gain = linMap(genotype.getNextGene(), params.inGainMin, params.inGainMax);	
 			inNode[i].bias = linMap(genotype.getNextGene(), params.inBiasMin, params.inBiasMax);	
-			inNode[i].t = (float)Math.exp(linMap(genotype.getNextGene(), params.inTcMin, params.inTcMax));	
-			float f = genotype.getNextGene();
-			inNode[i].transferFlatness = (float)Math.pow(f, 0.99f);	
+			inNode[i].t = Math.exp(linMap(genotype.getNextGene(), params.inTcMin, params.inTcMax));
+			double f = genotype.getNextGene();
+			inNode[i].transferFlatness = Math.pow(f, 0.99f);
 //			inNode[i].transferFunction = JLi.TransferFunction.NONE;
 		}
 		for(i = 0; i < params.numHiddenNodes; i++) {
@@ -70,15 +72,15 @@ public class JCtrnn implements Serializable {
 			for(j = 0; j < params.numHiddenNodes; j++) {
 				hiddenNode[i].input[j+params.numInputNodes] = hiddenNode[j].output;
 			}
-			hiddenNode[i].weight = new float[numNodes];
+			hiddenNode[i].weight = new double[numNodes];
 			for(j = 0; j < numNodes; j++) {
 				hiddenNode[i].weight[j] = linMap(genotype.getNextGene(), params.hWeightMin, params.hWeightMax);
 			}		
 			hiddenNode[i].gain = linMap(genotype.getNextGene(), params.hGainMin, params.hGainMax);	
 			hiddenNode[i].bias = linMap(genotype.getNextGene(), params.hBiasMin, params.hBiasMax);	
-			hiddenNode[i].t = (float)Math.exp(linMap(genotype.getNextGene(), params.hTcMin, params.hTcMax));	
-			float f = genotype.getNextGene();
-			hiddenNode[i].transferFlatness = (float)Math.pow(f, 0.99f);			
+			hiddenNode[i].t = Math.exp(linMap(genotype.getNextGene(), params.hTcMin, params.hTcMax));
+			double f = genotype.getNextGene();
+			hiddenNode[i].transferFlatness = Math.pow(f, 0.99f);
 		}
 		for(i = 0; i < params.numOutputNodes; i++) {
 			output[i] = hiddenNode[i].output;
@@ -101,7 +103,7 @@ public class JCtrnn implements Serializable {
 		return params;
 	}
 	
-	private static float linMap(float x, float min, float max) {
+	private static double linMap(double x, double min, double max) {
 		return ( x * (max - min) ) + min;
 	}
 	
@@ -117,7 +119,7 @@ public class JCtrnn implements Serializable {
 		}
 	}
 	
-	public void setState(float[] state)
+	public void setState(double[] state)
 	{
 		int i, j = 0;
 		for(i = 0; i < (this.params.numInputNodes); i++) {
@@ -130,7 +132,7 @@ public class JCtrnn implements Serializable {
 		}
 	}
 	
-	public void setStartState(float[] state)
+	public void setStartState(double[] state)
 	{
 		int i;
 		int twiceNumNodes = 2 * (this.params.numInputNodes + this.params.numHiddenNodes);
@@ -154,14 +156,14 @@ public class JCtrnn implements Serializable {
 	
 	public void setStartStateToCurrentState()
 	{
-		float[] state = this.getState();
+		double[] state = this.getState();
 		this.setStartState(state);
 	}
 	
-	public float[] getState()
+	public double[] getState()
 	{
 		int twiceNumNodes = 2 * (this.params.numInputNodes + this.params.numHiddenNodes);
-		float[] state = new float[twiceNumNodes];
+		double[] state = new double[twiceNumNodes];
 		int i, j = 0;
 		for(i = 0; i < (this.params.numInputNodes); i++) {
 			state[j++] = this.inNode[i].y;
@@ -174,24 +176,25 @@ public class JCtrnn implements Serializable {
 		return state;
 	}
 	
-	public float[] getStartState()
+	public double[] getStartState()
 	{
 		int twiceNumNodes = 2 * (this.params.numInputNodes + this.params.numHiddenNodes);
-		float[] state = new float[twiceNumNodes];
+		double[] state = new double[twiceNumNodes];
 		for(int i = 0; i < twiceNumNodes; i++) {
 			state[i] = this.startState[i];
 		}
 		return state;
 	}
 
-	public void update(float[] input) {
+	@Override
+	public void update(double[] input) {
 		feedInputs(input);
 		update();
 	}
 	
 	//could make a more efficient access, since in general when you're
 	//gathering the input for a ctrnn you're copying data into a new buffer
-	public void feedInputs(float[] input) {
+	private void feedInputs(double[] input) {
 		int i;
 		//update JCtrnn
 		//set inputs
@@ -200,7 +203,7 @@ public class JCtrnn implements Serializable {
 		}
 	}
 	
-	public void update() {
+	private void update() {
 		int i;
 		//update input nodes (witholding output value)
 		for(i = 0; i < this.params.numInputNodes; i++) {
@@ -221,27 +224,21 @@ public class JCtrnn implements Serializable {
 		}
 	}
 
-	public float getOutput(int i) {
+	public double getOutput(int i) {
 		return output[i].value;
 	}
 	
-	public float[] getOutputs() {
-		float[] outputs = new float[output.length];
+	public double[] getOutputs() {
+		double[] outputs = new double[output.length];
 		for(int i = 0; i < outputs.length; i++) {
 			outputs[i] = output[i].value;
 		}
 		return outputs;
 	}
-	
-	public static void main(String[] args) throws IOException {
-		Params p = new Params();
-		p.resetToDefault();
-		p.inTransferFunc = JLi.TransferFunction.SINTANH;
-		FileOutputStream fos = new FileOutputStream(new File("/Users/ollie/Desktop/p_test.txt"));
-		XMLEncoder oos = new XMLEncoder(fos);
-		oos.writeObject(p);
-		oos.close();
-		fos.close();
+
+	@Override
+	public int getDiscreteState() {
+		return 0;
 	}
 
 	public static class Params implements Serializable {
@@ -251,24 +248,24 @@ public class JCtrnn implements Serializable {
 		public int numInputNodes;
 		public int numHiddenNodes;
 		public int numOutputNodes;
-		public float timeStep;
-		public float inGainMin;
-		public float inGainMax;
-		public float inBiasMin;
-		public float inBiasMax;
-		public float inWeightMin;
-		public float inWeightMax;
-		public float inTcMin;
-		public float inTcMax;
-		public float hDensity;
-		public float hGainMin;
-		public float hGainMax;
-		public float hBiasMin;
-		public float hBiasMax;
-		public float hWeightMin;
-		public float hWeightMax;
-		public float hTcMin;
-		public float hTcMax;	
+		public double timeStep;
+		public double inGainMin;
+		public double inGainMax;
+		public double inBiasMin;
+		public double inBiasMax;
+		public double inWeightMin;
+		public double inWeightMax;
+		public double inTcMin;
+		public double inTcMax;
+		public double hDensity;
+		public double hGainMin;
+		public double hGainMax;
+		public double hBiasMin;
+		public double hBiasMax;
+		public double hWeightMin;
+		public double hWeightMax;
+		public double hTcMin;
+		public double hTcMax;
 		
 		public JLi.TransferFunction inTransferFunc;
 		public JLi.TransferFunction hTransferFunc;
@@ -337,147 +334,147 @@ public class JCtrnn implements Serializable {
 			this.numOutputNodes = numOutputNodes;
 		}
 
-		public float getTimeStep() {
+		public double getTimeStep() {
 			return timeStep;
 		}
 
-		public void setTimeStep(float timeStep) {
+		public void setTimeStep(double timeStep) {
 			this.timeStep = timeStep;
 		}
 
-		public float getInGainMin() {
+		public double getInGainMin() {
 			return inGainMin;
 		}
 
-		public void setInGainMin(float inGainMin) {
+		public void setInGainMin(double inGainMin) {
 			this.inGainMin = inGainMin;
 		}
 
-		public float getInGainMax() {
+		public double getInGainMax() {
 			return inGainMax;
 		}
 
-		public void setInGainMax(float inGainMax) {
+		public void setInGainMax(double inGainMax) {
 			this.inGainMax = inGainMax;
 		}
 
-		public float getInBiasMin() {
+		public double getInBiasMin() {
 			return inBiasMin;
 		}
 
-		public void setInBiasMin(float inBiasMin) {
+		public void setInBiasMin(double inBiasMin) {
 			this.inBiasMin = inBiasMin;
 		}
 
-		public float getInBiasMax() {
+		public double getInBiasMax() {
 			return inBiasMax;
 		}
 
-		public void setInBiasMax(float inBiasMax) {
+		public void setInBiasMax(double inBiasMax) {
 			this.inBiasMax = inBiasMax;
 		}
 
-		public float getInWeightMin() {
+		public double getInWeightMin() {
 			return inWeightMin;
 		}
 
-		public void setInWeightMin(float inWeightMin) {
+		public void setInWeightMin(double inWeightMin) {
 			this.inWeightMin = inWeightMin;
 		}
 
-		public float getInWeightMax() {
+		public double getInWeightMax() {
 			return inWeightMax;
 		}
 
-		public void setInWeightMax(float inWeightMax) {
+		public void setInWeightMax(double inWeightMax) {
 			this.inWeightMax = inWeightMax;
 		}
 
-		public float getInTcMin() {
+		public double getInTcMin() {
 			return inTcMin;
 		}
 
-		public void setInTcMin(float inTcMin) {
+		public void setInTcMin(double inTcMin) {
 			this.inTcMin = inTcMin;
 		}
 
-		public float getInTcMax() {
+		public double getInTcMax() {
 			return inTcMax;
 		}
 
-		public void setInTcMax(float inTcMax) {
+		public void setInTcMax(double inTcMax) {
 			this.inTcMax = inTcMax;
 		}
 
-		public float getHDensity() {
+		public double getHDensity() {
 			return hDensity;
 		}
 
-		public void setHDensity(float density) {
+		public void setHDensity(double density) {
 			hDensity = density;
 		}
 
-		public float getHGainMin() {
+		public double getHGainMin() {
 			return hGainMin;
 		}
 
-		public void setHGainMin(float gainMin) {
+		public void setHGainMin(double gainMin) {
 			hGainMin = gainMin;
 		}
 
-		public float getHGainMax() {
+		public double getHGainMax() {
 			return hGainMax;
 		}
 
-		public void setHGainMax(float gainMax) {
+		public void setHGainMax(double gainMax) {
 			hGainMax = gainMax;
 		}
 
-		public float getHBiasMin() {
+		public double getHBiasMin() {
 			return hBiasMin;
 		}
 
-		public void setHBiasMin(float biasMin) {
+		public void setHBiasMin(double biasMin) {
 			hBiasMin = biasMin;
 		}
 
-		public float getHBiasMax() {
+		public double getHBiasMax() {
 			return hBiasMax;
 		}
 
-		public void setHBiasMax(float biasMax) {
+		public void setHBiasMax(double biasMax) {
 			hBiasMax = biasMax;
 		}
 
-		public float getHWeightMin() {
+		public double getHWeightMin() {
 			return hWeightMin;
 		}
 
-		public void setHWeightMin(float weightMin) {
+		public void setHWeightMin(double weightMin) {
 			hWeightMin = weightMin;
 		}
 
-		public float getHWeightMax() {
+		public double getHWeightMax() {
 			return hWeightMax;
 		}
 
-		public void setHWeightMax(float weightMax) {
+		public void setHWeightMax(double weightMax) {
 			hWeightMax = weightMax;
 		}
 
-		public float getHTcMin() {
+		public double getHTcMin() {
 			return hTcMin;
 		}
 
-		public void setHTcMin(float tcMin) {
+		public void setHTcMin(double tcMin) {
 			hTcMin = tcMin;
 		}
 
-		public float getHTcMax() {
+		public double getHTcMax() {
 			return hTcMax;
 		}
 
-		public void setHTcMax(float tcMax) {
+		public void setHTcMax(double tcMax) {
 			hTcMax = tcMax;
 		}
 

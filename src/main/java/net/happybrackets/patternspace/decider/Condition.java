@@ -1,4 +1,4 @@
-package net.happybrackets.patternspace.decider.core;
+package net.happybrackets.patternspace.decider;
 
 public class Condition extends Operation {
 

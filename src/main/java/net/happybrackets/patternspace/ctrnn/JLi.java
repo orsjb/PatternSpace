@@ -20,15 +20,15 @@ public class JLi implements Serializable {
 		LOGSIG, TANH, SINTANH, NONE
 	};
 	
-	protected float y; 
+	protected double y;
 	protected DoublePointer output;			//network variables
-	private float outputTemp;			//temporary storage of output
-	protected float gain, bias, t;		//network parameters
+	private double outputTemp;			//temporary storage of output
+	protected double gain, bias, t;		//network parameters
 	protected int numInputs;				//number of inputs
 	protected DoublePointer[] input;			//array of pointers to floats
-	protected float[] weight;				//array of weights
-	protected float timeStep;
-	protected float transferFlatness;	//variable equivalent to 'a' in the transfer func: output = a*tanh(input) + (1-a)*sin(2*input)
+	protected double[] weight;				//array of weights
+	protected double timeStep;
+	protected double transferFlatness;	//variable equivalent to 'a' in the transfer func: output = a*tanh(input) + (1-a)*sin(2*input)
 	protected TransferFunction transferFunction;
 	
 	public JLi() {
@@ -49,12 +49,12 @@ public class JLi implements Serializable {
 		this.transferFunction = t;
 	}
 	
-	public float calculateOutput()
+	public double calculateOutput()
 	{
-		float y_dot;
+		double y_dot;
 		int i;
 		
-		y_dot = -1.0f * y;
+		y_dot = -1.0 * y;
 		for(i = 0; i < numInputs; i++) {
 			y_dot += weight[i] * input[i].value;
 		}
@@ -64,22 +64,22 @@ public class JLi implements Serializable {
 		return outputTemp;
 	}
 	
-	private float transfer(float x) {
+	private double transfer(double x) {
 		switch(transferFunction) {
 		case LOGSIG:
 			return logsig(x);
 		case TANH:
-			return (float)Math.tanh(x);
+			return Math.tanh(x);
 		case SINTANH:
-			return transferFlatness * (float)Math.tanh(x) + (1.0f - transferFlatness) * (float)Math.sin(2 * x);
+			return transferFlatness * Math.tanh(x) + (1.0f - transferFlatness) * Math.sin(2 * x);
 		case NONE:
 			break;
 		}
 		return x;
 	}
 	
-	public static float logsig(float x) {
-		return 1f / (1f + (float)Math.exp(-x));
+	public static double logsig(double x) {
+		return 1 / (1 + Math.exp(-x));
 	}
 
 	protected void update()
@@ -90,19 +90,19 @@ public class JLi implements Serializable {
 	
 	protected void reset()
 	{
-		y = 0.0f;
-		output.value = 0.0f;
-		outputTemp = 0.0f;
+		y = 0.0;
+		output.value = 0.0;
+		outputTemp = 0.0;
 	}
 	
 
 	//getters and setters
 
-	public float getY() {
+	public double getY() {
 		return y;
 	}
 
-	public void setY(float y) {
+	public void setY(double y) {
 		this.y = y;
 	}
 
@@ -114,35 +114,35 @@ public class JLi implements Serializable {
 		this.output = output;
 	}
 
-	public float getOutputTemp() {
+	public double getOutputTemp() {
 		return outputTemp;
 	}
 
-	public void setOutputTemp(float outputTemp) {
+	public void setOutputTemp(double outputTemp) {
 		this.outputTemp = outputTemp;
 	}
 
-	public float getGain() {
+	public double getGain() {
 		return gain;
 	}
 
-	public void setGain(float gain) {
+	public void setGain(double gain) {
 		this.gain = gain;
 	}
 
-	public float getBias() {
+	public double getBias() {
 		return bias;
 	}
 
-	public void setBias(float bias) {
+	public void setBias(double bias) {
 		this.bias = bias;
 	}
 
-	public float getT() {
+	public double getT() {
 		return t;
 	}
 
-	public void setT(float t) {
+	public void setT(double t) {
 		this.t = t;
 	}
 
@@ -162,27 +162,27 @@ public class JLi implements Serializable {
 		this.input = input;
 	}
 
-	public float[] getWeight() {
+	public double[] getWeight() {
 		return weight;
 	}
 
-	public void setWeight(float[] weight) {
+	public void setWeight(double[] weight) {
 		this.weight = weight;
 	}
 
-	public float getTimeStep() {
+	public double getTimeStep() {
 		return timeStep;
 	}
 
-	public void setTimeStep(float timeStep) {
+	public void setTimeStep(double timeStep) {
 		this.timeStep = timeStep;
 	}
 
-	public float getTransferFlatness() {
+	public double getTransferFlatness() {
 		return transferFlatness;
 	}
 
-	public void setTransferFlatness(float transferFlatness) {
+	public void setTransferFlatness(double transferFlatness) {
 		this.transferFlatness = transferFlatness;
 	}
 
