@@ -1,18 +1,18 @@
 //
-// JLi.java
-// JCtrnn
+// CtrnnNode.java
+// Ctrnn
 //
 // Created by Oliver Bown on 27/10/2005.
 // Copyright 2005 __MyCompanyName__. All rights reserved.
 //
 
-package net.happybrackets.patternspace.ctrnn;
+package net.happybrackets.patternspace.dynamic_system.ctrnn;
 
 
 
 import java.io.Serializable;
 
-public class JLi implements Serializable {
+public class CtrnnNode implements Serializable {
 
 	public static final long serialVersionUID = 1;
 	
@@ -31,12 +31,12 @@ public class JLi implements Serializable {
 	protected double transferFlatness;	//variable equivalent to 'a' in the transfer func: output = a*tanh(input) + (1-a)*sin(2*input)
 	protected TransferFunction transferFunction;
 	
-	public JLi() {
+	public CtrnnNode() {
 		output = new DoublePointer(0.0f);
 		transferFunction = TransferFunction.SINTANH;
 	}
 	
-	public JLi(int numInputs) {
+	public CtrnnNode(int numInputs) {
 		this();
 		this.numInputs = numInputs;
 		input = new DoublePointer[this.numInputs];

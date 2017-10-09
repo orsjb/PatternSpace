@@ -1,4 +1,4 @@
-package net.happybrackets.patternspace.ctrnn;
+package net.happybrackets.patternspace.dynamic_system.ctrnn;
 
 import java.io.File;
 import java.io.FileInputStream;

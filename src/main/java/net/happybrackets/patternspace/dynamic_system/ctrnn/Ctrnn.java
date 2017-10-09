@@ -1,24 +1,20 @@
 //
-//  JCtrnn.java
-//  JCtrnn
+//  Ctrnn.java
+//  Ctrnn
 //
 //  Created by Oliver Bown on 27/10/2005.
 //  Copyright (c) 2005 _MyCompanyName__. All rights reserved.
 //
 
-package net.happybrackets.patternspace.ctrnn;
+package net.happybrackets.patternspace.dynamic_system.ctrnn;
 
-import net.happybrackets.patternspace.core.ProcessingUnit;
+import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
 
-import java.beans.XMLEncoder;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.Random;
 
 
-public class JCtrnn implements Serializable, ProcessingUnit {
+public class Ctrnn implements Serializable, DynamicSystem {
 	
 	public static final long serialVersionUID = 1;
 	
@@ -26,32 +22,32 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 	public Params params;
 	private DoublePointer[] input;	//array of inputs
 	private DoublePointer[] output;	//array of pointers to outputs
-	private JLi[] hiddenNode;		//pointer to array of hidden nodes
-	private JLi[] inNode;			//pointer to array of input nodes
+	private CtrnnNode[] hiddenNode;		//pointer to array of hidden nodes
+	private CtrnnNode[] inNode;			//pointer to array of input nodes
 	private double[] startState;		//start state which can be recalled
 
-	//new fully-connected JCtrnn with no external inputs, output trace is connected to first input
+	//new fully-connected Ctrnn with no external inputs, output trace is connected to first input
 	//required genotype size is (I*4 + N^2 + N*3) where I = number of input nodes and N = number of hidden nodes
-	public JCtrnn(Chromosome genotype, Params params) {
+	public Ctrnn(Chromosome genotype, Params params) {
 		this.params = params;
 		int i, j;
 		int numNodes = params.numInputNodes + params.numHiddenNodes;
 		
 		input = new DoublePointer[params.numInputNodes];
-		hiddenNode = new JLi[params.numHiddenNodes];
-		inNode = new JLi[params.numInputNodes];
+		hiddenNode = new CtrnnNode[params.numHiddenNodes];
+		inNode = new CtrnnNode[params.numInputNodes];
 		output = new DoublePointer[params.numOutputNodes];
 		startState = new double[numNodes * 2];
 		for(i = 0; i < params.numInputNodes; i++) {
 			input[i] = new DoublePointer();
 		}
 		for(i = 0; i < params.numHiddenNodes; i++) {
-			hiddenNode[i] = new JLi(numNodes);
+			hiddenNode[i] = new CtrnnNode(numNodes);
 			hiddenNode[i].transferFunction = params.hTransferFunc;
 			hiddenNode[i].timeStep = params.timeStep;
 		}
 		for(i = 0; i < params.numInputNodes; i++) {
-			inNode[i] = new JLi(1);
+			inNode[i] = new CtrnnNode(1);
 			inNode[i].transferFunction = params.inTransferFunc;
 			inNode[i].timeStep = params.timeStep;
 			inNode[i].input[0] = input[i];
@@ -63,7 +59,7 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 			inNode[i].t = Math.exp(linMap(genotype.getNextGene(), params.inTcMin, params.inTcMax));
 			double f = genotype.getNextGene();
 			inNode[i].transferFlatness = Math.pow(f, 0.99f);
-//			inNode[i].transferFunction = JLi.TransferFunction.NONE;
+//			inNode[i].transferFunction = CtrnnNode.TransferFunction.NONE;
 		}
 		for(i = 0; i < params.numHiddenNodes; i++) {
 			for(j = 0; j <params.numInputNodes; j++) {
@@ -91,12 +87,12 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 		resetZero();
 	}
 	
-	//new randomly-connected JCtrnn
-	public JCtrnn(Params params) {
+	//new randomly-connected Ctrnn
+	public Ctrnn(Params params) {
 		this(Chromosome.newRandom(new Random(), params.getGenotypeLength()), params);
 	}
 	
-	public JCtrnn() {
+	public Ctrnn() {
 	}
 	
 	public Params getParams() {
@@ -196,7 +192,7 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 	//gathering the input for a ctrnn you're copying data into a new buffer
 	private void feedInputs(double[] input) {
 		int i;
-		//update JCtrnn
+		//update Ctrnn
 		//set inputs
 		for(i = 0; i < this.params.numInputNodes; i++) {
 			this.input[i].value = input[i];
@@ -267,8 +263,8 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 		public double hTcMin;
 		public double hTcMax;
 		
-		public JLi.TransferFunction inTransferFunc;
-		public JLi.TransferFunction hTransferFunc;
+		public CtrnnNode.TransferFunction inTransferFunc;
+		public CtrnnNode.TransferFunction hTransferFunc;
 		
 		
 		public Params() {
@@ -302,8 +298,8 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 			this.hTcMin = -0.3f;
 			this.hTcMax = 3.0f;
 			
-			this.inTransferFunc = JLi.TransferFunction.LOGSIG;
-			this.hTransferFunc = JLi.TransferFunction.LOGSIG;
+			this.inTransferFunc = CtrnnNode.TransferFunction.LOGSIG;
+			this.hTransferFunc = CtrnnNode.TransferFunction.LOGSIG;
 		}
 		
 		public int getGenotypeLength() {
@@ -478,19 +474,19 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 			hTcMax = tcMax;
 		}
 
-		public JLi.TransferFunction getInTransferFunc() {
+		public CtrnnNode.TransferFunction getInTransferFunc() {
 			return inTransferFunc;
 		}
 
-		public void setInTransferFunc(JLi.TransferFunction inTransferFunc) {
+		public void setInTransferFunc(CtrnnNode.TransferFunction inTransferFunc) {
 			this.inTransferFunc = inTransferFunc;
 		}
 
-		public JLi.TransferFunction getHTransferFunc() {
+		public CtrnnNode.TransferFunction getHTransferFunc() {
 			return hTransferFunc;
 		}
 
-		public void setHTransferFunc(JLi.TransferFunction transferFunc) {
+		public void setHTransferFunc(CtrnnNode.TransferFunction transferFunc) {
 			hTransferFunc = transferFunc;
 		}
 		
@@ -519,19 +515,19 @@ public class JCtrnn implements Serializable, ProcessingUnit {
 		this.output = output;
 	}
 
-	public JLi[] getHiddenNode() {
+	public CtrnnNode[] getHiddenNode() {
 		return hiddenNode;
 	}
 
-	public void setHiddenNode(JLi[] hiddenNode) {
+	public void setHiddenNode(CtrnnNode[] hiddenNode) {
 		this.hiddenNode = hiddenNode;
 	}
 
-	public JLi[] getInNode() {
+	public CtrnnNode[] getInNode() {
 		return inNode;
 	}
 
-	public void setInNode(JLi[] inNode) {
+	public void setInNode(CtrnnNode[] inNode) {
 		this.inNode = inNode;
 	}
 

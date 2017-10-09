@@ -1,4 +1,4 @@
-package net.happybrackets.patternspace.decider;
+package net.happybrackets.patternspace.dynamic_system.decider;
 
 import java.io.Serializable;
 

@@ -1,12 +1,12 @@
 //
 //  DoublePointer.java
-//  JCtrnn
+//  Ctrnn
 //
 //  Created by Oliver Bown on 27/10/2005.
 //  Copyright 2005 __MyCompanyName__. All rights reserved.
 //
 
-package net.happybrackets.patternspace.ctrnn;
+package net.happybrackets.patternspace.dynamic_system.ctrnn;
 
 import java.io.Serializable;
 

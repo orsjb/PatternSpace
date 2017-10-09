@@ -1,5 +1,5 @@
-package net.happybrackets.patternspace.decider;
-import net.happybrackets.patternspace.core.ProcessingUnit;
+package net.happybrackets.patternspace.dynamic_system.decider;
+import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
 
 import java.io.FileInputStream;
 import java.io.ObjectInputStream;
@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 
-public class Decider implements Serializable, ProcessingUnit {
+public class Decider implements Serializable, DynamicSystem {
 
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_NUM_ELEMENTS = 20;
