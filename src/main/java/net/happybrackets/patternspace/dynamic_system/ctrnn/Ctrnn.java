@@ -10,7 +10,9 @@ package net.happybrackets.patternspace.dynamic_system.ctrnn;
 
 import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
 
+import java.io.Reader;
 import java.io.Serializable;
+import java.io.Writer;
 import java.util.Random;
 
 
@@ -236,6 +238,17 @@ public class Ctrnn implements Serializable, DynamicSystem {
 	public int getDiscreteState() {
 		return 0;
 	}
+
+	@Override
+	public void writeJSON(Writer out) {
+		//TODO
+	}
+
+	public static Ctrnn readJSON(Reader in) {
+		//TODO
+		return null;
+	}
+
 
 	public static class Params implements Serializable {
 		

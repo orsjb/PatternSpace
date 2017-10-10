@@ -1,9 +1,10 @@
 package net.happybrackets.patternspace.dynamic_system.decider;
+import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonWriter;
 import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
 
-import java.io.FileInputStream;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -276,6 +277,19 @@ public class Decider implements Serializable, DynamicSystem {
 			e.printStackTrace();
 		}
 		return d;
+	}
+
+	public static Decider readJSON(Reader in) {
+		Gson gson = new Gson();
+		JsonReader reader = new JsonReader(in);
+		Decider result = gson.fromJson(reader, Decider.class);
+		return result;
+	}
+
+    @Override
+	public void writeJSON(Writer out) {
+        Gson gson = new Gson();
+        gson.toJson(this, out);
 	}
 
 	@Override
