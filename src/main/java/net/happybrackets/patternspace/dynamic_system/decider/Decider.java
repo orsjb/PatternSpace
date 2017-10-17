@@ -1,8 +1,10 @@
 package net.happybrackets.patternspace.dynamic_system.decider;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
+import net.happybrackets.patternspace.dynamic_system.core.DynamicSystemProperties;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -15,6 +17,8 @@ public class Decider implements Serializable, DynamicSystem {
 	public static final int DEFAULT_NUM_ELEMENTS = 20;
 	public static final int DEFAULT_NUM_STATES = 1000000;
 	public static final int DEFAULT_CONSOLIDATE_INTERVAL = 100;
+
+	DynamicSystemProperties properties;
 	
 	Random rng;
 	
@@ -28,6 +32,7 @@ public class Decider implements Serializable, DynamicSystem {
 	int lastConsolidateTime;
 	int[] state;
 	double[] output;
+	Number[] outputCache;
 	int[] stateChangeCount;
 	int[] stateInfluenceCount;
 	int numInputs;
@@ -55,6 +60,11 @@ public class Decider implements Serializable, DynamicSystem {
 		doConsolidate = true;
 		state = new int[numElements];
 		output = new double[numElements - numInputs];
+		outputCache = new Number[output.length + 1]; //stores the state plus the discrete output
+        for(int i = 0; i < output.length; i++) {
+            outputCache[i] = new Double(0);
+        }
+        outputCache[output.length] = new Integer(0);    //the integer
 		stateChangeCount = new int[numElements];
 		stateInfluenceCount = new int[numElements];
 		usageCount = 0;
@@ -133,9 +143,9 @@ public class Decider implements Serializable, DynamicSystem {
 	}
 
 	@Override
-	public void update(double[] inputs) {
+	public void update(Number[] inputs) {
 		for(int i = 0; i < inputs.length; i++) {
-			setInputFract(i, inputs[i]);
+			setInputFract(i, inputs[i].doubleValue());
 		}
 		process();
 	}
@@ -184,11 +194,30 @@ public class Decider implements Serializable, DynamicSystem {
 	}
 
 	@Override
-	public double[] getOutputs() {
+	public DynamicSystemProperties getProperties() {
+		if(properties == null) {
+		    Class<? extends Number>[] inputTypes = new Class[numInputs];
+		    for(int i = 0; i < numInputs; i++) {
+		        inputTypes[i] = Double.class;
+            }
+            Class<? extends Number>[] outputTypes = new Class[output.length + 1];
+            for(int i = 0; i < output.length; i++) {
+                outputTypes[i] = Double.class;
+            }
+            outputTypes[output.length] = Integer.class;
+            properties = new DynamicSystemProperties(getClass(), inputTypes, outputTypes);
+        }
+		return properties;
+	}
+
+	@Override
+	public Number[] getOutputs() {
 		for(int i = 0; i < output.length; i++) {
-			output[i] = state[i + numInputs];
+			output[i] = getStateFract(i);
+			outputCache[i] = output[i];
 		}
-		return  output;
+		outputCache[output.length] = lastLeaf;
+		return  outputCache;
 	}
 	
 	public double getInputFract(int i) {
@@ -288,13 +317,9 @@ public class Decider implements Serializable, DynamicSystem {
 
     @Override
 	public void writeJSON(Writer out) {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         gson.toJson(this, out);
 	}
 
-	@Override
-	public int getDiscreteState() {
-		return lastLeaf;
-	}
 }
 

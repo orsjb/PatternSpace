@@ -8,7 +8,11 @@
 
 package net.happybrackets.patternspace.dynamic_system.ctrnn;
 
+import com.google.gson.*;
+import com.google.gson.stream.JsonReader;
 import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
+import net.happybrackets.patternspace.dynamic_system.core.DynamicSystemProperties;
+import net.happybrackets.patternspace.dynamic_system.decider.Decider;
 
 import java.io.Reader;
 import java.io.Serializable;
@@ -24,6 +28,7 @@ public class Ctrnn implements Serializable, DynamicSystem {
 	public Params params;
 	private DoublePointer[] input;	//array of inputs
 	private DoublePointer[] output;	//array of pointers to outputs
+    Number[] outputCache;
 	private CtrnnNode[] hiddenNode;		//pointer to array of hidden nodes
 	private CtrnnNode[] inNode;			//pointer to array of input nodes
 	private double[] startState;		//start state which can be recalled
@@ -34,11 +39,11 @@ public class Ctrnn implements Serializable, DynamicSystem {
 		this.params = params;
 		int i, j;
 		int numNodes = params.numInputNodes + params.numHiddenNodes;
-		
 		input = new DoublePointer[params.numInputNodes];
 		hiddenNode = new CtrnnNode[params.numHiddenNodes];
 		inNode = new CtrnnNode[params.numInputNodes];
 		output = new DoublePointer[params.numOutputNodes];
+        outputCache = new Number[params.numOutputNodes];
 		startState = new double[numNodes * 2];
 		for(i = 0; i < params.numInputNodes; i++) {
 			input[i] = new DoublePointer();
@@ -185,19 +190,19 @@ public class Ctrnn implements Serializable, DynamicSystem {
 	}
 
 	@Override
-	public void update(double[] input) {
+	public void update(Number[] input) {
 		feedInputs(input);
 		update();
 	}
 	
 	//could make a more efficient access, since in general when you're
 	//gathering the input for a ctrnn you're copying data into a new buffer
-	private void feedInputs(double[] input) {
+	private void feedInputs(Number[] input) {
 		int i;
 		//update Ctrnn
 		//set inputs
 		for(i = 0; i < this.params.numInputNodes; i++) {
-			this.input[i].value = input[i];
+			this.input[i].value = input[i].doubleValue();
 		}
 	}
 	
@@ -220,32 +225,41 @@ public class Ctrnn implements Serializable, DynamicSystem {
 		for(i = 0; i < this.params.numHiddenNodes; i++) {
 			this.hiddenNode[i].update();
 		}
+        for(i = 0; i < outputCache.length; i++) {
+            outputCache[i] = output[i].value;
+        }
 	}
 
 	public double getOutput(int i) {
-		return output[i].value;
-	}
-	
-	public double[] getOutputs() {
-		double[] outputs = new double[output.length];
-		for(int i = 0; i < outputs.length; i++) {
-			outputs[i] = output[i].value;
-		}
-		return outputs;
+		return outputCache[i].doubleValue();
 	}
 
 	@Override
-	public int getDiscreteState() {
-		return 0;
+	public DynamicSystemProperties getProperties() {
+		return null;
+	}
+
+	public Number[] getOutputs() {
+		return outputCache;
 	}
 
 	@Override
 	public void writeJSON(Writer out) {
-		//TODO
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		gson.toJson(this, out);
 	}
 
 	public static Ctrnn readJSON(Reader in) {
-		//TODO
+		Gson gson = new Gson();
+		JsonReader reader = new JsonReader(in);
+		Ctrnn.Params params = new Ctrnn.Params();
+        JsonElement rootElement = new JsonParser().parse(reader);
+        JsonObject jobject = rootElement.getAsJsonObject();
+        jobject = jobject.getAsJsonObject("params");
+        JsonPrimitive primitive = jobject.getAsJsonPrimitive("timeStep");
+        double timeStep = primitive.getAsDouble();
+        System.out.println("Time Step is " + timeStep);
+//		Ctrnn result = gson.fromJson(reader, Ctrnn.class);
 		return null;
 	}
 

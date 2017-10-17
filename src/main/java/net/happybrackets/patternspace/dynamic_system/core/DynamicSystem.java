@@ -5,9 +5,9 @@ import java.io.Writer;
 
 public interface DynamicSystem extends Serializable {
 
-    public void update(double[] inputs);
-    public double[] getOutputs();
-    public int getDiscreteState();
+    public DynamicSystemProperties getProperties();
+    public void update(Number[] inputs);
+    public Number[] getOutputs();
     public void writeJSON(Writer out);
 
 }
