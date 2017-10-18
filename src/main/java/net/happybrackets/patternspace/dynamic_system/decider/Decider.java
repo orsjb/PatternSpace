@@ -1,6 +1,5 @@
 package net.happybrackets.patternspace.dynamic_system.decider;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
@@ -311,14 +310,23 @@ public class Decider implements Serializable, DynamicSystem {
 	public static Decider readJSON(Reader in) {
 		Gson gson = new Gson();
 		JsonReader reader = new JsonReader(in);
-		Decider result = gson.fromJson(reader, Decider.class);
+		JsonParser parser = new JsonParser();
+		JsonArray array = (JsonArray)parser.parse(reader);
+		JsonObject obj = (JsonObject)array.get(1);
+		Decider result = gson.fromJson(obj, Decider.class);
 		return result;
 	}
 
     @Override
 	public void writeJSON(Writer out) {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        gson.toJson(this, out);
+		JsonObject header = new JsonObject();
+		header.addProperty("class", "net.happybrackets.patternspace.dynamic.decider.Decider");
+		header.addProperty("serialVersionUID", 1);
+		JsonArray array = new JsonArray();
+		array.add(header);
+		array.add(gson.toJson(this));
+		gson.toJson(array, out);
 	}
 
 }
