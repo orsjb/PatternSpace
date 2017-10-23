@@ -307,26 +307,16 @@ public class Decider implements Serializable, DynamicSystem {
 		return d;
 	}
 
-	public static Decider readJSON(Reader in) {
+	public static Decider readJSON(JsonElement obj) {
 		Gson gson = new Gson();
-		JsonReader reader = new JsonReader(in);
-		JsonParser parser = new JsonParser();
-		JsonArray array = (JsonArray)parser.parse(reader);
-		JsonObject obj = (JsonObject)array.get(1);
 		Decider result = gson.fromJson(obj, Decider.class);
 		return result;
 	}
 
     @Override
-	public void writeJSON(Writer out) {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		JsonObject header = new JsonObject();
-		header.addProperty("class", "net.happybrackets.patternspace.dynamic.decider.Decider");
-		header.addProperty("serialVersionUID", 1);
-		JsonArray array = new JsonArray();
-		array.add(header);
-		array.add(gson.toJson(this));
-		gson.toJson(array, out);
+	public JsonElement writeJSON() {
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		return gson.toJsonTree(this);
 	}
 
 }

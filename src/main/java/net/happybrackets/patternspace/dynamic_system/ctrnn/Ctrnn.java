@@ -244,23 +244,15 @@ public class Ctrnn implements Serializable, DynamicSystem {
 	}
 
 	@Override
-	public void writeJSON(Writer out) {
+	public JsonElement writeJSON() {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		gson.toJson(this, out);
+		return gson.toJsonTree(this);
 	}
 
-	public static Ctrnn readJSON(Reader in) {
-		Gson gson = new Gson();
-		JsonReader reader = new JsonReader(in);
-		Ctrnn.Params params = new Ctrnn.Params();
-        JsonElement rootElement = new JsonParser().parse(reader);
-        JsonObject jobject = rootElement.getAsJsonObject();
-        jobject = jobject.getAsJsonObject("params");
-        JsonPrimitive primitive = jobject.getAsJsonPrimitive("timeStep");
-        double timeStep = primitive.getAsDouble();
-        System.out.println("Time Step is " + timeStep);
-//		Ctrnn result = gson.fromJson(reader, Ctrnn.class);
-		return null;
+	public static Ctrnn readJSON(JsonElement obj) {
+	    Gson gson = new Gson();
+		Ctrnn result = gson.fromJson(obj, Ctrnn.class);
+		return result;
 	}
 
 
