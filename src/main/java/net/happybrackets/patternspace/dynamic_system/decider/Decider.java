@@ -148,6 +148,13 @@ public class Decider implements Serializable, DynamicSystem {
 		}
 		process();
 	}
+
+	@Override
+	public void reset() {
+		for(int i = 0; i < state.length; i++) {
+			state[i] = 0;
+		}
+	}
 	
 	private void adapt() {
 		root.adapt();

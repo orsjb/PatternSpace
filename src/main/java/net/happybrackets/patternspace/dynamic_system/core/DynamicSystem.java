@@ -9,6 +9,7 @@ public interface DynamicSystem extends Serializable {
 
     public DynamicSystemProperties getProperties();
     public void update(Number[] inputs);
+    public void reset();
     public Number[] getOutputs();
     public JsonElement writeJSON();
 

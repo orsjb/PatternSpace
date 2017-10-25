@@ -109,7 +109,12 @@ public class Ctrnn implements Serializable, DynamicSystem {
 	private static double linMap(double x, double min, double max) {
 		return ( x * (max - min) ) + min;
 	}
-	
+
+	@Override
+	public void reset() {
+		resetZero();
+	}
+
 	public void resetZero()
 	{
 		int i;
