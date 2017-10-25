@@ -16,14 +16,24 @@ public class JsonFileReadWriteTests extends TestCase {
         if(!new File(dataDir).exists()) new File(dataDir).mkdir();
     }
 
-    @Test
-    public void testWritingDeciderToJson()  throws Exception {
-        Random rng = new Random();
-        DynamicSystem dynamicSystem = Decider.newRandomTree(6, 30, rng, 0.05f);
-        FileWriter writer = new FileWriter(dataDir + "/testDecider.json");
-        DynamicSystemUtils.writeToJSON(dynamicSystem, writer);
-        writer.close();
-    }
+//    @Test
+//    public void testWritingDeciderToJson()  throws Exception {
+//        Random rng = new Random();
+//        DynamicSystem dynamicSystem = Decider.newRandomTree(6, 30, rng, 0.05f);
+//        FileWriter writer = new FileWriter(dataDir + "/testDecider.json");
+//        DynamicSystemUtils.writeToJSON(dynamicSystem, writer);
+//        writer.close();
+//    }
+
+//    @Test
+//    public void testReadingDeciderFromJson() throws Exception {
+//        FileReader reader = new FileReader(dataDir + "/testDecider.json");
+//        DynamicSystem dynamicSystem = DynamicSystemUtils.readFromJSON(reader);
+//        reader.close();
+//        dynamicSystem.update(new Number[]{0.0});
+//        dynamicSystem.getOutputs();
+//        assert dynamicSystem != null;
+//    }
 
     @Test
     public void testWritingCtrnnToJson()  throws Exception {
@@ -36,16 +46,6 @@ public class JsonFileReadWriteTests extends TestCase {
         FileWriter writer = new FileWriter(dataDir + "/testCtrnn.json");
         DynamicSystemUtils.writeToJSON(dynamicSystem, writer);
         writer.close();
-    }
-
-    @Test
-    public void testReadingDeciderFromJson() throws Exception {
-        FileReader reader = new FileReader(dataDir + "/testDecider.json");
-        DynamicSystem dynamicSystem = DynamicSystemUtils.readFromJSON(reader);
-        reader.close();
-        dynamicSystem.update(new Number[]{0.0});
-        dynamicSystem.getOutputs();
-        assert dynamicSystem != null;
     }
 
     @Test
