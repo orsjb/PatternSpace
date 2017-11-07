@@ -2,6 +2,7 @@ package net.happybrackets.patternspace.dynamic_system.core;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
+import net.happybrackets.patternspace.mapping.MapTools;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -46,6 +47,33 @@ public abstract class DynamicSystemUtils {
         array.add(object.writeJSON());
 
         gson.toJson(array, out);
+    }
+
+    public static Number[] getOutputs(DynamicSystem object, Class<? extends Number> typeFilter) {
+        Number[] output = object.getOutputs();
+        Class<? extends Number>[] types = object.getProperties().outputTypes;
+        int correctTypeCount = 0;
+        for(Class<? extends Number> type : types) {
+            if(type.equals(typeFilter)) {
+                correctTypeCount++;
+            }
+        }
+        Number[] filteredOutput = new Number[correctTypeCount];
+        int filteredObjectIndex = 0;
+        for(int i = 0; i < output.length; i++) {
+            if(types[i].equals(typeFilter)) {
+                filteredOutput[filteredObjectIndex++] = output[i];
+            }
+        }
+        return filteredOutput;
+    }
+
+    public static double distance(double[] x, double[] y) {
+        double distance = 0;
+        for(int i = 0; i < x.length; i++) {
+            distance += (x[i] - y[i]) * (x[i] - y[i]);
+        }
+        return Math.sqrt(distance);
     }
 
 }
