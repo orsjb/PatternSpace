@@ -1,6 +1,8 @@
 package net.happybrackets.patternspace.dynamic_system.decider;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class Operation implements Serializable {
 
@@ -34,4 +36,44 @@ public abstract class Operation implements Serializable {
 	public int getRecentUsageCount() {
 		return usageCount - decider.lastConsolidateTime;
 	}
+
+	public static Operation parse(Decider d, String s) {
+		Operation result = null;
+		//strip outer brackets
+		s = s.substring(1, s.length() - 1);
+		//check for D
+		if(s.startsWith("D")) {
+			s = s.substring(1); //remove the D
+			//it's a condition
+			result = Condition.parse(d, s);
+		} else {
+			//it's a leaf
+			result = ProcessArray.parse(d, s);
+		}
+		return result;
+	}
+
+	public static String[] split(String s) {
+        //split around ',' ignoring bracketed elements
+        List<Integer> splitPoints = new ArrayList<>();
+        int depth = 0;
+        for(int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            if(ch == '(') {
+                depth++;
+            } else if(ch == ')') {
+                depth--;
+            } else if(ch == ',' && depth == 0) {
+                splitPoints.add(i);
+            }
+        }
+        String[] results = new String[splitPoints.size() + 1];
+        int previousSplitPoint = 0;
+        for(int i = 0; i < splitPoints.size(); i++) {
+            results[i] = s.substring(previousSplitPoint+1, splitPoints.get(i));
+            previousSplitPoint = splitPoints.get(i);
+        }
+        results[splitPoints.size()] = s.substring(splitPoints.get(splitPoints.size() - 1) + 1);
+        return results;
+    }
 }

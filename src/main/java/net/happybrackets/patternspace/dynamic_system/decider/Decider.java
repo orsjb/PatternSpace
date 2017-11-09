@@ -101,6 +101,12 @@ public class Decider implements Serializable, DynamicSystem {
 		}
 		System.out.println();
 	}
+
+	public static Decider parseFromString(int numInputs, int numElements, String s, Random rng) {
+		Decider d = new Decider(rng, numElements, DEFAULT_NUM_STATES, DEFAULT_CONSOLIDATE_INTERVAL, numInputs);
+		d.root = Condition.parse(d, s);
+		return d;
+	}
 	
 	public static Decider newRandomTree(int numInputs, int numElements, Random rng, float splitProb) {
 		Decider d = new Decider(rng, numElements, DEFAULT_NUM_STATES, DEFAULT_CONSOLIDATE_INTERVAL, numInputs);

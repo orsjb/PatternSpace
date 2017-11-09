@@ -34,13 +34,24 @@ public class Condition extends Operation {
 		c.valueThresh = d.numStates / 2 + d.rng.nextInt((int)(d.numStates * 0.3f)) - d.numStates * 0.15f;
 		return c;
 	}
-	
+
 	public static Condition newRandom(Decider d, int index, Operation yesOperation, Operation noOperation) {
 		Condition c = new Condition(d);
 		c.yesOperation = yesOperation;
 		c.noOperation = noOperation;
 		c.valueIndex = (index < 2)? 0 : (index - 2) % d.state.length;
 		c.valueThresh = d.numStates / 2 + d.rng.nextInt((int)(d.numStates * 0.3f)) - d.numStates * 0.15f;
+		return c;
+	}
+
+	public static Condition parse(Decider d, String s) {
+		Condition c = new Condition(d);
+		String[] parts = Operation.split(s);
+		//get value index
+		c.valueIndex = Integer.parseInt(parts[0]);
+		c.valueThresh = Float.parseFloat(parts[1]);
+		c.yesOperation = Operation.parse(d, parts[2]);
+		c.noOperation = Operation.parse(d, parts[3]);
 		return c;
 	}
 

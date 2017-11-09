@@ -80,4 +80,30 @@ public class ProcessArray extends Leaf {
 		return copy;
 	}
 
+	public static Operation parse(Decider d, String s) {
+		ProcessArray pa = new ProcessArray(d);
+		String[] bits = s.split("[,]");
+		int i = 0;
+		while(i < bits.length) {
+			Process p = new Process(d);
+			p.sourceIndex = Integer.parseInt(bits[i++]);
+			String op = bits[i++];
+			switch (op) {
+				case "+":
+					p.op = Process.BinaryOp.ADD;
+					break;
+				case "*":
+					p.op = Process.BinaryOp.MULTIPLY;
+					break;
+				case "-":
+					p.op = Process.BinaryOp.SUBTRACT;
+					break;
+			}
+			p.targetIndex = Integer.parseInt(bits[i++]);
+			pa.addOperation(p);
+		}
+
+		return pa;
+	}
+
 }
