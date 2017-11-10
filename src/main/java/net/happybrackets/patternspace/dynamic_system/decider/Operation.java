@@ -39,11 +39,8 @@ public abstract class Operation implements Serializable {
 
 	public static Operation parse(Decider d, String s) {
 		Operation result = null;
-		//strip outer brackets
-		s = s.substring(1, s.length() - 1);
 		//check for D
-		if(s.startsWith("D")) {
-			s = s.substring(1); //remove the D
+		if(s.startsWith("(D")) {
 			//it's a condition
 			result = Condition.parse(d, s);
 		} else {
@@ -68,7 +65,7 @@ public abstract class Operation implements Serializable {
             }
         }
         String[] results = new String[splitPoints.size() + 1];
-        int previousSplitPoint = 0;
+        int previousSplitPoint = -1;
         for(int i = 0; i < splitPoints.size(); i++) {
             results[i] = s.substring(previousSplitPoint+1, splitPoints.get(i));
             previousSplitPoint = splitPoints.get(i);

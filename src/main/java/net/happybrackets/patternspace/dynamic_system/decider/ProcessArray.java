@@ -81,6 +81,7 @@ public class ProcessArray extends Leaf {
 	}
 
 	public static Operation parse(Decider d, String s) {
+		s = s.substring(1, s.length() - 1);     //remove the brackets
 		ProcessArray pa = new ProcessArray(d);
 		String[] bits = s.split("[,]");
 		int i = 0;
@@ -100,7 +101,7 @@ public class ProcessArray extends Leaf {
 					break;
 			}
 			p.targetIndex = Integer.parseInt(bits[i++]);
-			pa.addOperation(p);
+            pa.addOperation(p);
 		}
 
 		return pa;

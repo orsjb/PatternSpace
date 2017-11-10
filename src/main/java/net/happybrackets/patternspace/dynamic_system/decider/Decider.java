@@ -12,6 +12,17 @@ import java.util.Random;
 
 public class Decider implements Serializable, DynamicSystem {
 
+	/**
+	 * Grammar that describes the Decider.
+	 */
+	public static final String GRAMMAR = "<expr> ::= (<decision>)\n"
+			+ "<node> ::= (<decision>)|(<leaf>)\n"
+			+ "<decision> ::= D <index>,<thresh>,<node>,<node>\n"
+			+ "<index> ::= '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'\n"
+			+ "<thresh> ::= '0.0'|'0.1'|'0.2'|'0.3'|'0.3'|'0.4'|'0.5'|'0.6'|'0.7'|'0.8'|'0.9'|'1.0'\n"
+			+ "<leaf> ::= <index>,<op>,<index>|<leaf>,<leaf>\n"
+			+ "<op> ::= '*'|'+'|'-'\n";
+
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_NUM_ELEMENTS = 20;
 	public static final int DEFAULT_NUM_STATES = 1000000;
@@ -104,7 +115,7 @@ public class Decider implements Serializable, DynamicSystem {
 
 	public static Decider parseFromString(int numInputs, int numElements, String s, Random rng) {
 		Decider d = new Decider(rng, numElements, DEFAULT_NUM_STATES, DEFAULT_CONSOLIDATE_INTERVAL, numInputs);
-		d.root = Condition.parse(d, s);
+        d.root = Condition.parse(d, s);
 		return d;
 	}
 	

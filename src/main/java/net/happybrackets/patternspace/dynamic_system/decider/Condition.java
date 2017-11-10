@@ -45,11 +45,12 @@ public class Condition extends Operation {
 	}
 
 	public static Condition parse(Decider d, String s) {
+        s = s.substring(2, s.length() - 1);     //remove the brackets and leading D
 		Condition c = new Condition(d);
 		String[] parts = Operation.split(s);
 		//get value index
 		c.valueIndex = Integer.parseInt(parts[0]);
-		c.valueThresh = Float.parseFloat(parts[1]);
+		c.valueThresh = Float.parseFloat(parts[1]) * d.numStates;
 		c.yesOperation = Operation.parse(d, parts[2]);
 		c.noOperation = Operation.parse(d, parts[3]);
 		return c;
