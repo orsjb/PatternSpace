@@ -13,7 +13,7 @@ import java.util.Random;
 public class Decider implements Serializable, DynamicSystem {
 
 	/**
-	 * Grammar that describes the Decider.
+	 * Grammar that describes the Decider for evolution of contextfreegrammer in MOEA framework.
 	 */
 	public static final String GRAMMAR = "<expr> ::= (<decision>)\n"
 			+ "<node> ::= (<decision>)|(<leaf>)\n"
@@ -21,7 +21,7 @@ public class Decider implements Serializable, DynamicSystem {
 			+ "<index> ::= '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'\n"
 			+ "<thresh> ::= '0.0'|'0.1'|'0.2'|'0.3'|'0.3'|'0.4'|'0.5'|'0.6'|'0.7'|'0.8'|'0.9'|'1.0'\n"
 			+ "<leaf> ::= <index>,<op>,<index>|<leaf>,<leaf>\n"
-			+ "<op> ::= '*'|'+'|'-'\n";
+			+ "<op> ::= '*'|'+'|'-'|'LOW'|'HIGH'\n";
 
 	private static final long serialVersionUID = 1L;
 	public static final int DEFAULT_NUM_ELEMENTS = 20;
@@ -67,7 +67,7 @@ public class Decider implements Serializable, DynamicSystem {
 		this.numInputs = numInputs;
 		nextLeafIndex = 0;
 		verbose = false;
-		doConsolidate = true;
+		doConsolidate = false;
 		state = new int[numElements];
 		output = new double[numElements - numInputs];
 		outputCache = new Number[output.length + 1]; //stores the state plus the discrete output
@@ -328,6 +328,7 @@ public class Decider implements Serializable, DynamicSystem {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		d.reset();
 		return d;
 	}
 

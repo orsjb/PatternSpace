@@ -99,6 +99,12 @@ public class ProcessArray extends Leaf {
 				case "-":
 					p.op = Process.BinaryOp.SUBTRACT;
 					break;
+				case "LOW":
+					p.op = Process.BinaryOp.SET_LOW;
+					break;
+				case "HIGH":
+					p.op = Process.BinaryOp.SET_HIGH;
+					break;
 			}
 			p.targetIndex = Integer.parseInt(bits[i++]);
             pa.addOperation(p);

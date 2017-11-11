@@ -10,7 +10,7 @@ public class Process extends Operation {
 	static float scale = 0.01f;
 
 	static enum BinaryOp implements Serializable {
-		ADD, SUBTRACT, MULTIPLY
+		ADD, SUBTRACT, MULTIPLY, SET_LOW, SET_HIGH
 	}
 	
 	BinaryOp op;
@@ -36,6 +36,12 @@ public class Process extends Operation {
 			break;
 		case MULTIPLY:
 			decider.state[targetIndex] *= 0.5f + (float)decider.state[sourceIndex] / (decider.numStates);
+			break;
+		case SET_LOW:
+			decider.state[targetIndex] = 0;
+			break;
+		case SET_HIGH:
+			decider.state[targetIndex] = decider.numStates - 1;
 			break;
 		default:
 		}
