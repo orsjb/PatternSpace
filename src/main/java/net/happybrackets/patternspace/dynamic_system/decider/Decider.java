@@ -18,9 +18,9 @@ public class Decider implements Serializable, DynamicSystem {
 	public static final String GRAMMAR = "<expr> ::= (<decision>)\n"
 			+ "<node> ::= (<decision>)|(<leaf>)\n"
 			+ "<decision> ::= D <index>,<thresh>,<node>,<node>\n"
-			+ "<index> ::= '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'\n"
-			+ "<thresh> ::= '0.0'|'0.1'|'0.2'|'0.3'|'0.3'|'0.4'|'0.5'|'0.6'|'0.7'|'0.8'|'0.9'|'1.0'\n"
-			+ "<leaf> ::= <index>,<op>,<index>|<leaf>,<leaf>\n"
+			+ "<index> ::= '0'|'1'|'2'|'3'|'4'|'5'|'6'|'7'|'8'|'9'|'10'|'11'|'12'|'13'|'14'|'15'|'16'|'17'|'18'|'19'|'20'|'21'|'22'|'23'|'24'|'25'\n"
+			+ "<thresh> ::= '0'|'0.1'|'0.2'|'0.3'|'0.4'|'0.5'|'0.6'|'0.7'|'0.8'|'0.9'|'1.0'\n"
+            + "<leaf> ::= <index>,<op>,<index>|<leaf>,<leaf>\n"
 			+ "<op> ::= '*'|'+'|'-'|'LOW'|'HIGH'\n";
 
 	private static final long serialVersionUID = 1L;
@@ -40,7 +40,7 @@ public class Decider implements Serializable, DynamicSystem {
 	boolean verbose;
 	int usageCount;
 	int lastConsolidateTime;
-	int[] state;
+	int[] state;                //the state array is an array of states first populated with the input variables then with internal states
 	double[] output;
 	Number[] outputCache;
 	int[] stateChangeCount;
@@ -113,9 +113,9 @@ public class Decider implements Serializable, DynamicSystem {
 		System.out.println();
 	}
 
-	public static Decider parseFromString(int numInputs, int numElements, String s, Random rng) {
+	public static Decider parseFromString(int numInputs, int numElements, String grammarString, Random rng) {
 		Decider d = new Decider(rng, numElements, DEFAULT_NUM_STATES, DEFAULT_CONSOLIDATE_INTERVAL, numInputs);
-        d.root = Condition.parse(d, s);
+        d.root = Condition.parse(d, grammarString);
 		return d;
 	}
 	

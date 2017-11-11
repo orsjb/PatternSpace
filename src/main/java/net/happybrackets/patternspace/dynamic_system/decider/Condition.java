@@ -50,7 +50,7 @@ public class Condition extends Operation {
 		String[] parts = Operation.split(s);
 		//get value index
 		c.valueIndex = Integer.parseInt(parts[0]);
-		c.valueThresh = Float.parseFloat(parts[1]) * d.numStates;
+        c.valueThresh = Float.parseFloat(parts[1]) * d.numStates;
 		c.yesOperation = Operation.parse(d, parts[2]);
 		c.noOperation = Operation.parse(d, parts[3]);
 		return c;
