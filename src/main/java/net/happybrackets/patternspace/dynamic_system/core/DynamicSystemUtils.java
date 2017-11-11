@@ -9,6 +9,8 @@ import java.io.Reader;
 import java.io.Writer;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 public abstract class DynamicSystemUtils {
 
@@ -49,23 +51,15 @@ public abstract class DynamicSystemUtils {
         gson.toJson(array, out);
     }
 
-    public static Number[] getOutputs(DynamicSystem object, Class<? extends Number> typeFilter) {
-        Number[] output = object.getOutputs();
-        Class<? extends Number>[] types = object.getProperties().outputTypes;
-        int correctTypeCount = 0;
-        for(Class<? extends Number> type : types) {
-            if(type.equals(typeFilter)) {
-                correctTypeCount++;
-            }
-        }
-        Number[] filteredOutput = new Number[correctTypeCount];
+    public static Number[] getOutputs(Number[] outputs, Class<? extends Number> typeFilter) {
+        List<Number> filteredOutputs = new ArrayList<>();
         int filteredObjectIndex = 0;
-        for(int i = 0; i < output.length; i++) {
-            if(types[i].equals(typeFilter)) {
-                filteredOutput[filteredObjectIndex++] = output[i];
+        for(int i = 0; i < outputs.length; i++) {
+            if(outputs[i].getClass().equals(typeFilter)) {
+                filteredOutputs.add(outputs[i]);
             }
         }
-        return filteredOutput;
+        return filteredOutputs.toArray(new Number[]{});
     }
 
     public static double distance(double[] x, double[] y) {
