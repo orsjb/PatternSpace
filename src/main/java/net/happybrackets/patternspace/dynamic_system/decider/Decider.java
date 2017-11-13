@@ -347,5 +347,8 @@ public class Decider implements Serializable, DynamicSystem {
 		return gson.toJsonTree(this);
 	}
 
+    public String getGenotypeString() {
+        return genotype;
+    }
 }
 
