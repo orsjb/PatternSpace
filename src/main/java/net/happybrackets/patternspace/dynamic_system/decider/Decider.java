@@ -35,6 +35,8 @@ public class Decider implements Serializable, DynamicSystem {
 	int numElements;
 	int numStates;
 	int consolidateInterval;
+
+	String genotype;
 	
 	boolean doConsolidate;
 	boolean verbose;
@@ -115,6 +117,7 @@ public class Decider implements Serializable, DynamicSystem {
 
 	public static Decider parseFromString(int numInputs, int numElements, String grammarString, Random rng) {
 		Decider d = new Decider(rng, numElements, DEFAULT_NUM_STATES, DEFAULT_CONSOLIDATE_INTERVAL, numInputs);
+		d.genotype = grammarString;
         d.root = Condition.parse(d, grammarString);
 		return d;
 	}
