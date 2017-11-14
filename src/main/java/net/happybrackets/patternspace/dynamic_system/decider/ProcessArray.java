@@ -7,6 +7,10 @@ public class ProcessArray extends Leaf {
 
 	private static final long serialVersionUID = 1L;
 
+	public ArrayList<Operation> getOperations() {
+		return operations;
+	}
+
 	private ArrayList<Operation> operations;
 	
 	public ProcessArray(Decider d) {

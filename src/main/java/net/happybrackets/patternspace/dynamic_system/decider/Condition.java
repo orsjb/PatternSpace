@@ -5,6 +5,15 @@ public class Condition extends Operation {
 	private static final long serialVersionUID = 1L;
 
 	private Operation yesOperation, noOperation;
+
+	public int getValueIndex() {
+		return valueIndex;
+	}
+
+	public float getValueThresh() {
+		return valueThresh;
+	}
+
 	private int valueIndex;
 	private float valueThresh;
 	private int yesDecisionCount;

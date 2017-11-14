@@ -1,7 +1,5 @@
 package net.happybrackets.patternspace.dynamic_system.decider;
 import com.google.gson.*;
-import com.google.gson.stream.JsonReader;
-import com.google.gson.stream.JsonWriter;
 import net.happybrackets.patternspace.dynamic_system.core.DynamicSystem;
 import net.happybrackets.patternspace.dynamic_system.core.DynamicSystemProperties;
 
@@ -36,7 +34,7 @@ public class Decider implements Serializable, DynamicSystem {
 	int numStates;
 	int consolidateInterval;
 
-	String genotype;
+	String cfgGenotype = "";
 	
 	boolean doConsolidate;
 	boolean verbose;
@@ -117,7 +115,7 @@ public class Decider implements Serializable, DynamicSystem {
 
 	public static Decider parseFromString(int numInputs, int numElements, String grammarString, Random rng) {
 		Decider d = new Decider(rng, numElements, DEFAULT_NUM_STATES, DEFAULT_CONSOLIDATE_INTERVAL, numInputs);
-		d.genotype = grammarString;
+		d.cfgGenotype = grammarString;
         d.root = Condition.parse(d, grammarString);
 		return d;
 	}
@@ -217,6 +215,10 @@ public class Decider implements Serializable, DynamicSystem {
 		} else {
 			throw new ArrayIndexOutOfBoundsException(i);
 		}
+	}
+
+	public String toString() {
+            return "leaves="+getNumLeaves();
 	}
 
 	@Override
@@ -348,7 +350,32 @@ public class Decider implements Serializable, DynamicSystem {
 	}
 
     public String getGenotypeString() {
-        return genotype;
+        return cfgGenotype;
+    }
+
+    public static void printOut(Decider d) {
+		printOut(d.root, 0);
+	}
+
+	public static void printOut(Operation o, int depth) {
+        for(int i = 0; i < depth; i++) {
+            System.out.print(" ");
+        }
+	    if(o instanceof Condition) {
+	        Condition c = (Condition)o;
+            System.out.println("Condition " + c.getValueIndex() + " " + c.getValueThresh());
+	        printOut(c.getYesOperation(), depth+1);
+	        printOut(c.getNoOperation(), depth+1);
+        } else if(o instanceof ProcessArray) {
+            ProcessArray pa = (ProcessArray)o;
+            System.out.println("Process Array " + pa.index);
+            for(Operation o2 : pa.getOperations()) {
+                printOut(o2, depth+1);
+            }
+        } else if(o instanceof Process) {
+            Process p = (Process)o;
+            System.out.println("Process " + p.targetIndex + " " + p.op + " " + p.sourceIndex);
+        }
     }
 }
 
